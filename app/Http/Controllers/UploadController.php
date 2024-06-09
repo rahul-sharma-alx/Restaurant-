@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\Foods;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -132,5 +133,20 @@ class UploadController extends Controller
         $food = Foods::withTrashed()->find($id);
         $food->restore();
         return redirect()->route('move.trash')->with('success', 'Food restored successfully');
+    }
+    public function changeLang($lang = null){
+        //dd($lang);
+        if($lang == null){
+            $lang = 'en';
+        }
+        else{
+            //dd($lang);
+            App::setLocale($lang);
+            session()->put('lang', $lang);
+        }
+        return view('hello');
+    }
+    public function hello(){
+        return view('hello');
     }
 }

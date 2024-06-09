@@ -40,6 +40,8 @@ Route::get('edit/{id}', [UploadController::class, 'edit']);
 Route::delete('food/{id}', [UploadController::class, 'destroy']);
 Route::get('short/{t}',[UploadController::class, 'short']);
 Route::get('restore/{id}',[UploadController::class,'restore']);
+Route::get('hello',[UploadController::class,'hello']);
+Route::get('msg/{lang?}',[UploadController::class,'changeLang']);
 
 
 require __DIR__.'/auth.php';
