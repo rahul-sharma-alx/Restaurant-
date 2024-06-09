@@ -61,11 +61,16 @@ class UploadController extends Controller
             $imagename = time().'.'.$ex;
             $image->move(public_path('uploads'),$imagename);
         }else{
-            $imagename = Foods::find($id)->image;
+            $foods = Foods::withTrashed()->find($id);
+            if($foods) {
+                $imagename = $foods->image;
+            } else {
+                $imagename = null;
+            }
         }
         
         //insert into database
-        $foods = Foods::findOrFail($id);
+       // $foods = Foods::findOrFail($id);
         $foods->title = $request->title;
         $foods->category = $request->category;
         $foods->image = $imagename; 
@@ -90,16 +95,16 @@ class UploadController extends Controller
         return view('trash', compact('foods'));
     }
     public function edit($id){
-        $food = Foods::find($id);
-        // dd($food);
+        $food = Foods::withTrashed()->find($id);
+         //dd($food);
         // exit;
         return view('edit', compact('food'));
     }
 
     public function destroy($id){
-        $food = Foods::findOrFail($id);
+        $food = Foods::withTrashed()->findOrFail($id);
         //File::delete(public_path('uploads/'.$food->image));
-        $food->delete();
+        $food->forceDelete();
         return redirect()->route('food.list')->with('success', 'Food deleted successfully');
     }
 
@@ -109,16 +114,23 @@ class UploadController extends Controller
         return view('foodList', compact('foods'));
     }
     public function short($term){
-        $sortby1 = $term;
-        $sortby=0;
-        if($sortby != $sortby1){
-            $foods = Foods::orderBy('id','ASC')->get();
-            $sortby = 1;
-        }else{
-            $foods = Foods::orderBy('id','DESC')->get();
-            $sortby = 0;
-        }
-        // $foods = Foods::orderBy('id','ASC')->get();
-        return view('foodList', compact('foods'));
+    $sortby = session()->get('sortby', 0); 
+    //dd($sortby);
+    if($term == $sortby){ // Check if the term matches the current sorting order
+        $sortby = ($sortby == 0) ? 1 : 0; // Toggle the sorting order
+    } else {
+        $sortby = $term; // Set the sorting order to the provided term
+    }
+
+    session()->put('sortby', $sortby); // Update the sorting order in the session
+
+    $foods = Foods::orderBy('id', ($sortby == 0) ? 'ASC' : 'DESC')->get(); // Sort the foods based on the sorting order
+
+    return view('foodList', compact('foods'));
+}
+    public function restore($id){
+        $food = Foods::withTrashed()->find($id);
+        $food->restore();
+        return redirect()->route('move.trash')->with('success', 'Food restored successfully');
     }
 }

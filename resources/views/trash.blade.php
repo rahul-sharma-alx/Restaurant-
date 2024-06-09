@@ -56,6 +56,7 @@
                                         @method('delete')
                                         <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this item?')">Delete</button>
                                     </form>
+                                    <a href="{{ url('restore/'.$fd->id) }}" class="btn btn-primary">Restore</a>
                                 </div>
                             </td>
                         </tr>

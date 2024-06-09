@@ -39,6 +39,7 @@ Route::get('search_food',[UploadController::class, 'search'])->name('search_food
 Route::get('edit/{id}', [UploadController::class, 'edit']);
 Route::delete('food/{id}', [UploadController::class, 'destroy']);
 Route::get('short/{t}',[UploadController::class, 'short']);
+Route::get('restore/{id}',[UploadController::class,'restore']);
 
 
 require __DIR__.'/auth.php';
